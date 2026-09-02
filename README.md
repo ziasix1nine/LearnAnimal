@@ -9,7 +9,7 @@ ads, chat, or sensitive permissions.
 
 ## Tech stack
 
-- Expo SDK 57 + React Native 0.86 + TypeScript (strict)
+- Expo SDK 56 + React Native 0.85 + TypeScript (strict)
 - Expo Router (file-based navigation, `app/`)
 - `expo-audio` for sound effects/music, `expo-speech` for text-to-speech
 - `@react-native-async-storage/async-storage` for local progress/settings
@@ -55,6 +55,12 @@ needed).
 npm install
 npx expo start
 ```
+
+Testing on a physical phone with the **Expo Go** app? Make sure Expo Go
+is on SDK 56 — brand-new Expo SDKs are often ahead of what's live on the
+App Store/Play Store for a while after release. If Expo Go reports it
+needs a newer/older version than what you have, grab the matching build
+from `https://expo.dev/go?sdkVersion=56` rather than the store listing.
 
 This project uses `legacy-peer-deps=true` (see `.npmrc`) because
 `expo-router`'s own web tooling pulls in a peer-dependency graph that
