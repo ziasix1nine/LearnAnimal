@@ -69,13 +69,14 @@ async function ensureAudioMode() {
   });
 }
 
-function getSfxPlayer(name: SfxName): AudioPlayer {
+function getSfxPlayer(name: SfxName): { player: AudioPlayer; isNew: boolean } {
   let player = sfxPlayers.get(name);
+  const isNew = !player;
   if (!player) {
     player = createAudioPlayer(SFX_SOURCES[name]);
     sfxPlayers.set(name, player);
   }
-  return player;
+  return { player, isNew };
 }
 
 export const audioService = {
@@ -97,9 +98,15 @@ export const audioService = {
     if (!settings.sfxEnabled) return;
     try {
       await ensureAudioMode();
-      const player = getSfxPlayer(name);
+      const { player, isNew } = getSfxPlayer(name);
       player.volume = settings.volume;
-      await player.seekTo(0);
+      if (!isNew) {
+        try {
+          await player.seekTo(0);
+        } catch {
+          // ignore — playback below still proceeds
+        }
+      }
       player.play();
     } catch {
       // Non-critical: gameplay continues even if a sound fails to play.
@@ -138,12 +145,23 @@ export const audioService = {
       try {
         await ensureAudioMode();
         let player = animalPlayers.get(animal.id);
+        const isNewPlayer = !player;
         if (!player) {
           player = createAudioPlayer(bundled);
           animalPlayers.set(animal.id, player);
         }
         player.volume = settings.volume;
-        await player.seekTo(0);
+        // A freshly created player is already at position 0 and may not be
+        // finished loading yet, so seeking it can throw — only re-seek a
+        // player we know has already played before, and don't let a seek
+        // failure block playback.
+        if (!isNewPlayer) {
+          try {
+            await player.seekTo(0);
+          } catch {
+            // ignore — playback below still proceeds
+          }
+        }
         player.play();
         return;
       } catch {
