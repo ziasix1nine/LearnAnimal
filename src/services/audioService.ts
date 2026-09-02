@@ -4,12 +4,33 @@ import * as Speech from "expo-speech";
 import type { Animal } from "@/types/animal";
 
 /**
- * Real recorded animal sounds go here once available — see
- * assets/audio/README.md for the exact steps. Until an id is registered,
- * playAnimalSound() falls back to speaking the animal's sound word.
+ * Synthesized (not recorded) animal sound effects — original, license-free
+ * audio generated offline, not text-to-speech. See assets/audio/README.md
+ * for how to swap any of these for real recordings later: drop a file at
+ * assets/audio/animals/<id>.mp3 and update its line here. Until an id is
+ * registered, playAnimalSound() falls back to speaking the sound word.
  */
 const ANIMAL_SOUND_FILES: Partial<Record<string, AudioSource>> = {
-  // cow: require("../../assets/audio/animals/cow.mp3"),
+  dog: require("../../assets/audio/animals/dog.wav") as AudioSource,
+  cat: require("../../assets/audio/animals/cat.wav") as AudioSource,
+  cow: require("../../assets/audio/animals/cow.wav") as AudioSource,
+  pig: require("../../assets/audio/animals/pig.wav") as AudioSource,
+  horse: require("../../assets/audio/animals/horse.wav") as AudioSource,
+  sheep: require("../../assets/audio/animals/sheep.wav") as AudioSource,
+  lion: require("../../assets/audio/animals/lion.wav") as AudioSource,
+  elephant: require("../../assets/audio/animals/elephant.wav") as AudioSource,
+  monkey: require("../../assets/audio/animals/monkey.wav") as AudioSource,
+  duck: require("../../assets/audio/animals/duck.wav") as AudioSource,
+  chicken: require("../../assets/audio/animals/chicken.wav") as AudioSource,
+  frog: require("../../assets/audio/animals/frog.wav") as AudioSource,
+  bear: require("../../assets/audio/animals/bear.wav") as AudioSource,
+  tiger: require("../../assets/audio/animals/tiger.wav") as AudioSource,
+  giraffe: require("../../assets/audio/animals/giraffe.wav") as AudioSource,
+  zebra: require("../../assets/audio/animals/zebra.wav") as AudioSource,
+  penguin: require("../../assets/audio/animals/penguin.wav") as AudioSource,
+  dolphin: require("../../assets/audio/animals/dolphin.wav") as AudioSource,
+  rabbit: require("../../assets/audio/animals/rabbit.wav") as AudioSource,
+  turtle: require("../../assets/audio/animals/turtle.wav") as AudioSource,
 };
 
 const SFX_SOURCES = {
@@ -34,6 +55,7 @@ interface AudioSettingsSnapshot {
 let settings: AudioSettingsSnapshot = { sfxEnabled: true, musicEnabled: true, volume: 0.8 };
 
 const sfxPlayers = new Map<SfxName, AudioPlayer>();
+const animalPlayers = new Map<string, AudioPlayer>();
 let musicPlayer: AudioPlayer | null = null;
 let audioModeReady = false;
 
@@ -47,13 +69,14 @@ async function ensureAudioMode() {
   });
 }
 
-function getSfxPlayer(name: SfxName): AudioPlayer {
+function getSfxPlayer(name: SfxName): { player: AudioPlayer; isNew: boolean } {
   let player = sfxPlayers.get(name);
+  const isNew = !player;
   if (!player) {
     player = createAudioPlayer(SFX_SOURCES[name]);
     sfxPlayers.set(name, player);
   }
-  return player;
+  return { player, isNew };
 }
 
 export const audioService = {
@@ -75,9 +98,15 @@ export const audioService = {
     if (!settings.sfxEnabled) return;
     try {
       await ensureAudioMode();
-      const player = getSfxPlayer(name);
+      const { player, isNew } = getSfxPlayer(name);
       player.volume = settings.volume;
-      await player.seekTo(0);
+      if (!isNew) {
+        try {
+          await player.seekTo(0);
+        } catch {
+          // ignore — playback below still proceeds
+        }
+      }
       player.play();
     } catch {
       // Non-critical: gameplay continues even if a sound fails to play.
@@ -115,8 +144,24 @@ export const audioService = {
     if (bundled) {
       try {
         await ensureAudioMode();
-        const player = createAudioPlayer(bundled);
+        let player = animalPlayers.get(animal.id);
+        const isNewPlayer = !player;
+        if (!player) {
+          player = createAudioPlayer(bundled);
+          animalPlayers.set(animal.id, player);
+        }
         player.volume = settings.volume;
+        // A freshly created player is already at position 0 and may not be
+        // finished loading yet, so seeking it can throw — only re-seek a
+        // player we know has already played before, and don't let a seek
+        // failure block playback.
+        if (!isNewPlayer) {
+          try {
+            await player.seekTo(0);
+          } catch {
+            // ignore — playback below still proceeds
+          }
+        }
         player.play();
         return;
       } catch {

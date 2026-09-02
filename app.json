@@ -10,7 +10,9 @@
     "backgroundColor": "#FFF7E1",
     "primaryColor": "#FF9E5E",
     "newArchEnabled": true,
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.animalfriends.app",
@@ -52,7 +54,9 @@
           "resizeMode": "contain",
           "backgroundColor": "#FFF7E1"
         }
-      ]
+      ],
+      "expo-image",
+      "expo-status-bar"
     ],
     "experiments": {
       "typedRoutes": true

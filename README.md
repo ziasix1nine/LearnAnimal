@@ -9,7 +9,7 @@ ads, chat, or sensitive permissions.
 
 ## Tech stack
 
-- Expo SDK 57 + React Native 0.86 + TypeScript (strict)
+- Expo SDK 56 + React Native 0.85 + TypeScript (strict)
 - Expo Router (file-based navigation, `app/`)
 - `expo-audio` for sound effects/music, `expo-speech` for text-to-speech
 - `@react-native-async-storage/async-storage` for local progress/settings
@@ -56,6 +56,12 @@ npm install
 npx expo start
 ```
 
+Testing on a physical phone with the **Expo Go** app? Make sure Expo Go
+is on SDK 56 — brand-new Expo SDKs are often ahead of what's live on the
+App Store/Play Store for a while after release. If Expo Go reports it
+needs a newer/older version than what you have, grab the matching build
+from `https://expo.dev/go?sdkVersion=56` rather than the store listing.
+
 This project uses `legacy-peer-deps=true` (see `.npmrc`) because
 `expo-router`'s own web tooling pulls in a peer-dependency graph that
 `npm`'s strict resolver otherwise rejects — this is safe and Expo's
@@ -100,12 +106,12 @@ To use real artwork instead, see the step-by-step guide in
 
 ## Replacing animal sounds
 
-The app ships without recorded animal vocalizations to avoid any
-licensing concerns — it speaks each animal's sound word via
-text-to-speech instead, clearly marked as a placeholder in
-`src/services/audioService.ts`. To add real, properly licensed
-recordings, follow `assets/audio/README.md` (drop an mp3 in
-`assets/audio/animals/`, register it in one map, done).
+Every animal ships with a real (not text-to-speech) sound effect —
+a bark, meow, moo, etc. These are synthesized offline rather than
+recorded, so there's no licensing concern, but they're an approximation
+rather than a genuine recording. To swap any of them for a real,
+properly licensed recording, follow `assets/audio/README.md` (drop an
+mp3 in `assets/audio/animals/`, update one line in a map, done).
 
 The button/chime/music sounds in `assets/audio/sfx` and
 `assets/audio/music` are small synthesized placeholder tones (not
