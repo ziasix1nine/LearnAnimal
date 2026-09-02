@@ -106,12 +106,12 @@ To use real artwork instead, see the step-by-step guide in
 
 ## Replacing animal sounds
 
-The app ships without recorded animal vocalizations to avoid any
-licensing concerns — it speaks each animal's sound word via
-text-to-speech instead, clearly marked as a placeholder in
-`src/services/audioService.ts`. To add real, properly licensed
-recordings, follow `assets/audio/README.md` (drop an mp3 in
-`assets/audio/animals/`, register it in one map, done).
+Every animal ships with a real (not text-to-speech) sound effect —
+a bark, meow, moo, etc. These are synthesized offline rather than
+recorded, so there's no licensing concern, but they're an approximation
+rather than a genuine recording. To swap any of them for a real,
+properly licensed recording, follow `assets/audio/README.md` (drop an
+mp3 in `assets/audio/animals/`, update one line in a map, done).
 
 The button/chime/music sounds in `assets/audio/sfx` and
 `assets/audio/music` are small synthesized placeholder tones (not
